@@ -3,9 +3,9 @@
 _sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
 
 pkgname=tinyproxy-runit
-pkgver=1.1
+pkgver=20220322
 pkgrel=1
-pkgdesc="various runit service scripts"
+pkgdesc="runit service script for tinyproxy"
 arch=('any')
 url="https://github.com/Shidzenrekus/artix-runit"
 license=('MIT')
