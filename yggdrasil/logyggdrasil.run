@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ -e /var/log/yggdrasil ] || {
+    mkdir /var/log/yggdrasil
+}
+
+exec chpst svlogd -t /var/log/yggdrasil

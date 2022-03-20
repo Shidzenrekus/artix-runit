@@ -1,0 +1,10 @@
+#!/bin/sh
+
+[ -e /etc/yggdrasil.conf ] || {
+    yggdrasil -genconf
+    chmod 0640 /etc/yggdrasil.conf
+}
+
+setcap CAP_NET_ADMIN,CAP_NET_BIND_SERVICE+p `which yggdrasil`
+modprobe tun
+exec chpst yggdrasil -useconffile /etc/yggdrasil.conf

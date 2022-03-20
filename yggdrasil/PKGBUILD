@@ -1,0 +1,40 @@
+# Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
+
+_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
+
+pkgname=yggdrasil-runit
+pkgver=20220322
+pkgrel=1
+pkgdesc="runit service script for yggdrasil"
+arch=('any')
+url="https://github.com/Shidzenrekus/artix-runit"
+license=('MIT')
+depends=('yggdrasil' 'runit')
+provides=('init-yggdrasil')
+conflicts=('init-yggdrasil')
+source=("yggdrasil.run" "logyggdrasil.run")
+sha256sums=('be0e37a23e083d550025a0da2c1e45068eddd95c4647ecf6d5dac8c4b90af6da'
+            'fdd2d25e7b0aec7b552172b7ecdbbb800350d42cfb999546c0c90ebd686a99cf')
+
+_inst_logsv() {
+    for file in run finish check; do
+        if test -f "$srcdir/log$1.$file"; then
+            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
+        fi
+    done
+}
+
+_inst_sv(){
+    for file in run finish check; do
+        if test -f "$srcdir/$1.$file"; then
+            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
+        fi
+    done
+}
+
+package() {
+    _inst_sv 'yggdrasil'
+    _inst_logsv 'yggdrasil'
+}
