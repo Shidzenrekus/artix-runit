@@ -1,0 +1,34 @@
+# Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
+
+_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
+
+pkgname=zapret-runit
+pkgver=20220322
+pkgrel=1
+pkgdesc="runit service script for zapret"
+arch=('any')
+url="https://github.com/Shidzenrekus/artix-runit"
+license=('MIT')
+depends=('runit')
+provides=('init-zapret')
+conflicts=('init-zapret')
+source=("zapret.run" "zapret.down")
+sha256sums=('c4dcc3867c68e2b5100013ab03c86b9de67f6e6905c5c9151fe7a9abfda97a58'
+            '15fc4a8619e04719b53c91756e404f805d1dd389c729fa2d058b5233a9d89dec')
+
+_inst_sv(){
+    if test -f "$srcdir/$1.down"; then
+        install -Dm755 "$srcdir/$1.down" "$pkgdir/etc/runit/sv/$1/control/d"
+    fi
+
+    for file in run finish check; do
+        if test -f "$srcdir/$1.$file"; then
+            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
+        fi
+    done
+}
+
+package() {
+    _inst_sv 'zapret'
+}
