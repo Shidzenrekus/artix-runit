@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -e /var/log/tinyproxy ] || {
+    mkdir /var/log/tinyproxy
+    chown tinyproxy:tinyproxy /var/log/tinyproxy
+}
+
+exec chpst -u tinyproxy:tinyproxy svlogd -t /var/log/tinyproxy
