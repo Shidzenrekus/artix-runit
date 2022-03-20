@@ -1,2 +1,8 @@
 #!/bin/sh
+
+[ -e /var/log/whoogle ] || {
+    mkdir /var/log/whoogle
+    chown whoogle:whoogle /var/log/whoogle
+}
+
 exec chpst -u whoogle:whoogle svlogd -t /var/log/whoogle
