@@ -1,0 +1,40 @@
+# Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
+
+_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
+
+pkgname=zeronet-runit
+pkgver=20220322
+pkgrel=1
+pkgdesc="runit service script for zeronet"
+arch=('any')
+url="https://github.com/Shidzenrekus/artix-runit"
+license=('MIT')
+depends=('zeronet' 'runit')
+provides=('init-zeronet')
+conflicts=('init-zeronet')
+source=("zeronet.run" "logzeronet.run")
+sha256sums=('cadb9d50757f3576832388a867caa170e71fee3c1bc8f0c399b17556fdf1eb7a'
+            '31eac9b2a16d0a88f19eee87a930be0e0f6ee770dd0f7f1060d3f5204ea66afa')
+
+_inst_logsv() {
+    for file in run finish check; do
+        if test -f "$srcdir/log$1.$file"; then
+            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
+        fi
+    done
+}
+
+_inst_sv(){
+    for file in run finish check; do
+        if test -f "$srcdir/$1.$file"; then
+            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
+        fi
+    done
+}
+
+package() {
+    _inst_sv 'zeronet'
+    _inst_logsv 'zeronet'
+}

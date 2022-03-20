@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -e /var/log/zeronet ] || {
+    mkdir /var/log/zeronet
+    chown zeronet:zeronet /var/log/zeronet
+}
+
+exec chpst -u zeronet:zeronet svlogd -t /var/log/zeronet
