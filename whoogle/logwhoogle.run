@@ -1,0 +1,2 @@
+#!/bin/sh
+exec chpst -u whoogle:whoogle svlogd -t /var/log/whoogle
