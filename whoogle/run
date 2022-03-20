@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -r conf ] && . ./conf
+cd /opt/whoogle-search/
+exec chpst -1 /opt/whoogle-search/venv/bin/python -um app --host "${IP_ADRESS}" --port "${PORT}"
