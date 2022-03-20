@@ -1,0 +1,40 @@
+# Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
+
+_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
+
+pkgname=tinyproxy-runit
+pkgver=20220322
+pkgrel=1
+pkgdesc="runit service script for tinyproxy"
+arch=('any')
+url="https://github.com/Shidzenrekus/artix-runit"
+license=('MIT')
+depends=('tinyproxy' 'runit')
+provides=('init-tinyproxy')
+conflicts=('init-tinyproxy')
+source=("tinyproxy.run" "logtinyproxy.run")
+sha256sums=('9342d6886d79f8e17238b85a0f84bc615c4f378ade6121e40cd60bc5ca465114'
+            '989c5b211e0f64999a6330f191ca3c1df06dd255ce7289154eb17ee0f6ad5135')
+
+_inst_logsv() {
+    for file in run finish check; do
+        if test -f "$srcdir/log$1.$file"; then
+            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
+        fi
+    done
+}
+
+_inst_sv(){
+    for file in run finish check; do
+        if test -f "$srcdir/$1.$file"; then
+            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
+        fi
+    done
+}
+
+package() {
+    _inst_sv 'tinyproxy'
+    _inst_logsv 'tinyproxy'
+}
