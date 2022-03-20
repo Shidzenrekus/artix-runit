@@ -1,40 +1,35 @@
 # Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
 
-_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
-
-pkgname=yggdrasil-runit
-pkgver=20220322
+pkgname=yggdrasil
+pkgver=0.4.3
 pkgrel=1
-pkgdesc="runit service script for yggdrasil"
-arch=('any')
-url="https://github.com/Shidzenrekus/artix-runit"
-license=('MIT')
-depends=('yggdrasil' 'runit')
-provides=('init-yggdrasil')
-conflicts=('init-yggdrasil')
-source=("yggdrasil.run" "logyggdrasil.run")
-sha256sums=('be0e37a23e083d550025a0da2c1e45068eddd95c4647ecf6d5dac8c4b90af6da'
-            'fdd2d25e7b0aec7b552172b7ecdbbb800350d42cfb999546c0c90ebd686a99cf')
+pkgdesc="An experiment in scalable routing as an encrypted IPv6 overlay network"
+arch=('x86_64')
+url="https://github.com/yggdrasil-network/yggdrasil-go"
+license=('LGPL3')
+depends=('glibc' 'esysusers')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/yggdrasil-network/yggdrasil-go/archive/v${pkgver}.tar.gz"
+        'yggdrasil.sysusers')
+sha512sums=('00ba6e611c6073e150db0d402edfcd4d548021b30c7afcc11507dfb2ac2e730433bd9f39438331e9d9de6d8a36fc57dc9f01b0d1cbad4927ffbf60906042aac3'
+            'b78d1f5efeeba184588ba7bdb2249d976aec160daa59742e032983da1aedad062d15c7c97cba3eba69412a0f7904ee123d98b58f859892d71188c25624295c32')
+b2sums=('8474f52771d7a34027a56de83f74c3ed0f66127b5bcdf498c5820713079e2da1c9ac0c44b0e19903b15ae32fd47d79f8b4cbbe9607dff1951c5ea74ff1af409d'
+        '3cf5bfb3c09908f841b39f7206bb472e50e60f10d1b87ab6def97a7212e27627f1e795bbaffd964d2d27a80fbbd1a3be63d63c59793ec1967c02f48b8462c08b')
 
-_inst_logsv() {
-    for file in run finish check; do
-        if test -f "$srcdir/log$1.$file"; then
-            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
-            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
-        fi
-    done
-}
-
-_inst_sv(){
-    for file in run finish check; do
-        if test -f "$srcdir/$1.$file"; then
-            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
-            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
-        fi
-    done
+build() {
+  cd "${pkgname}-go-${pkgver}"
+  PKGNAME="${pkgname}" PKGVER="${pkgver}" \
+    CGO_LDFLAGS="${LDFLAGS}" \
+    GOFLAGS="-trimpath -buildmode=pie -mod=readonly" \
+    ./build -l "-linkmode external -extldflags \"${LDFLAGS}\""
 }
 
 package() {
-    _inst_sv 'yggdrasil'
-    _inst_logsv 'yggdrasil'
+  cd "${pkgname}-go-${pkgver}"
+  install -Dm755 "yggdrasil" "${pkgdir}/usr/bin/yggdrasil"
+  install -Dm755 "yggdrasilctl" "${pkgdir}/usr/bin/yggdrasilctl"
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 "${srcdir}/yggdrasil.sysusers" "${pkgdir}/usr/lib/sysusers.d/yggdrasil.conf"
 }
+
+# vim: ts=2 sw=2 et:
