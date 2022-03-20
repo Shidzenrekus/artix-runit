@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -r conf ] && . ./conf
+setcap CAP_NET_BIND_SERVICE+p `which ss-local`
+exec chpst -u nobody:nobody /usr/bin/ss-local -c "${CONFIG}"

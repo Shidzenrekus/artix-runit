@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -e /var/log/shadowsocks ] || {
+    mkdir /var/log/shadowsocks
+    chown nobody:nobody /var/log/shadowsocks
+}
+
+exec chpst -u nobody:nobody svlogd -t /var/log/shadowsocks

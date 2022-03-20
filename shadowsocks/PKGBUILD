@@ -1,0 +1,45 @@
+# Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
+
+_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
+
+pkgname=shadowsocks-libev-runit
+pkgver=20220322
+pkgrel=1
+pkgdesc="runit service script for shadowsocks-libev"
+arch=('any')
+url="https://github.com/Shidzenrekus/artix-runit"
+license=('MIT')
+depends=('shadowsocks-libev' 'runit')
+provides=('init-shadowsocks-libev')
+conflicts=('init-shadowsocks-libev')
+source=("shadowsocks-libev.run" "shadowsocks-libev.conf" "logshadowsocks-libev.run")
+sha256sums=('d28cd98759fe87143f28a3136255753e1b8af6a9d75b34d2e0616943b3852868'
+            '76c1d9d619fba48b6155f625c9fd83da11cc65de2238a768841b684b9f8d3990'
+            'd1ff832d02510a48a214d9a1374daecbb42302fcd5a70b13759bcefbe236bf85')
+
+_inst_logsv() {
+    for file in run finish check; do
+        if test -f "$srcdir/log$1.$file"; then
+            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
+        fi
+    done
+}
+
+_inst_sv(){
+    if test -f "$srcdir/$1.conf"; then
+        install -Dm644 "$srcdir/$1.conf" "$pkgdir/etc/runit/sv/$1/conf"
+    fi
+
+    for file in run finish check; do
+        if test -f "$srcdir/$1.$file"; then
+            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
+        fi
+    done
+}
+
+package() {
+    _inst_sv 'shadowsocks-libev'
+    _inst_logsv 'shadowsocks-libev'
+}
