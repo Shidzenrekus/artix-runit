@@ -1,34 +1,47 @@
 # Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
 
-_sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
-
-pkgname=zapret-runit
-pkgver=20220322
+pkgname=zapret-git
+pkgver=r432.49771f1
 pkgrel=1
-pkgdesc="runit service script for zapret"
-arch=('any')
-url="https://github.com/Shidzenrekus/artix-runit"
-license=('MIT')
-depends=('runit')
-provides=('init-zapret')
-conflicts=('init-zapret')
-source=("zapret.run" "zapret.down")
-sha256sums=('c4dcc3867c68e2b5100013ab03c86b9de67f6e6905c5c9151fe7a9abfda97a58'
-            '15fc4a8619e04719b53c91756e404f805d1dd389c729fa2d058b5233a9d89dec')
+pkgdesc='Bypass deep packet inspection'
+arch=(x86_64)
+url="https://github.com/bol-van/zapret"
+license=(MIT)
+depends=('gcc' 'libnetfilter_queue' 'ipset' 'curl')
+makedepends=('git')
+provides=('zapret')
+conflicts=('zapret')
+backup=('opt/zapret/config')
+source=("git+$url.git")
+sha256sums=('SKIP')
 
-_inst_sv(){
-    if test -f "$srcdir/$1.down"; then
-        install -Dm755 "$srcdir/$1.down" "$pkgdir/etc/runit/sv/$1/control/d"
-    fi
+pkgver() {
+   cd "$srcdir/${pkgbase%-git}"
+   (  set -o pipefail
+      git describe --tags --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+      printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+   )
+   pkgrel=$(git diff --shortstat|cut -d' ' -f2)
+}
 
-    for file in run finish check; do
-        if test -f "$srcdir/$1.$file"; then
-            install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
-            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/$file"
-        fi
-    done
+build() {
+    make -C "$srcdir/${pkgbase%-git}"
 }
 
 package() {
-    _inst_sv 'zapret'
+    cd "$srcdir/${pkgbase%-git}"
+
+    for n in ip2net mdig;do
+        install -Dm755 "binaries/my/$n" "$pkgdir/opt/zapret/$n/$n"
+    done
+    install -Dm755 ipset/* -t "$pkgdir/opt/zapret/ipset"
+    install -Dm755 init.d/sysv/* -t "$pkgdir/opt/zapret/init.d/sysv"
+    install -Dm755 common/* -t "$pkgdir/opt/zapret/common"
+    install -Dm644 config "$pkgdir/opt/zapret/config"
+    install -Ddm755 "$pkgdir/usr/bin"    
+    install -Dm755 "binaries/my/nfqws" "$pkgdir/opt/zapret/nfq/nfqws"
+    ln -s /opt/zapret/nfq/nfqws "$pkgdir/usr/bin/nfqws"
+    # Because nfqws work with HTTPS
+    sed -ri "s/^#?MODE=.*$/MODE=nfqws/" "$pkgdir/opt/zapret/config"
 }
+ 
