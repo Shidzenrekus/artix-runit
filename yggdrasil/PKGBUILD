@@ -29,7 +29,7 @@ package() {
   install -Dm755 "yggdrasil" "${pkgdir}/usr/bin/yggdrasil"
   install -Dm755 "yggdrasilctl" "${pkgdir}/usr/bin/yggdrasilctl"
   install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
-  install -Dm644 "${srcdir}/yggdrasil.sysusers" "${pkgdir}/usr/lib/sysusers.d/yggdrasil.conf"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
 }
 
 # vim: ts=2 sw=2 et:

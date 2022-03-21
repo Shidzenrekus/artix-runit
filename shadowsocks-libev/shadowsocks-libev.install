@@ -3,6 +3,8 @@ post_install() {
 	setcap cap_net_bind_service+ep usr/bin/ss-server 2>/dev/null
 	setcap cap_net_bind_service+ep usr/bin/ss-tunnel 2>/dev/null
 	setcap cap_net_bind_service,cap_net_admin+ep usr/bin/ss-redir  2>/dev/null
+	sysusers /tmp/makepkg/shadowsocks-libev/pkg/shadowsocks-libev/usr/lib/sysusers.d/shadowsocks-libev.conf
+	chown -R shadowsocks:shadowsocks etc/shadowsocks
 }
 
 post_upgrade() {

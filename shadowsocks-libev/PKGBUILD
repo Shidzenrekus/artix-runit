@@ -7,12 +7,15 @@ pkgdesc='A lightweight secured socks5 proxy for embedded devices and low end box
 arch=('x86_64')
 url='https://github.com/shadowsocks/shadowsocks-libev'
 license=('GPL3')
-depends=('libcap' 'mbedtls' 'libsodium' 'libev' 'c-ares' 'pcre' 'libcorkipset' 'libbloom')
+depends=('libcap' 'mbedtls' 'libsodium' 'libev' 'c-ares' 'pcre' 'libcorkipset' 'libbloom' 'esysusers')
 makedepends=('asciidoc' 'xmlto')
 install=${pkgname}.install
-source=("$pkgname-$pkgver.tar.gz::https://github.com/shadowsocks/$pkgname/archive/v$pkgver.tar.gz")
-
-sha512sums=('c0cc869b4b7661ebd348bd5559c6a17c44b66a5f42374d97023adcfb525d934da3ed96245ff792ebc74870d30dd8f71fadcd89c79b2cd8a98d551ff7592508d0')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/shadowsocks/$pkgname/archive/v$pkgver.tar.gz"
+        "localhost.json"
+        "sysusers.conf")
+sha512sums=('c0cc869b4b7661ebd348bd5559c6a17c44b66a5f42374d97023adcfb525d934da3ed96245ff792ebc74870d30dd8f71fadcd89c79b2cd8a98d551ff7592508d0'
+            '3df07bd2b7af3a313ad313140b3f40c3c28d54d4510b3f76e22579292e09875b183be336d3951fd7c79c392d99a80236bff67cfa57f5fbeaf8e2d16366ac2ab7'
+            '93b2b26d4cfe256cf9b8ff9dc34b23f461a165c83149c879e10fbcd39c3be089b5b1976c8693ffae24b66eb2919b751f326dddc23c1f4e3b775b8ea6feabb877')
 
 prepare() {
   cd "$srcdir"/$pkgname-$pkgver
@@ -29,6 +32,9 @@ build() {
 }
 
 package() {
+  install -vDm644 localhost.json "$pkgdir/etc/shadowsocks/localhost.json"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+
   cd "$srcdir"/$pkgname-$pkgver
   make DESTDIR="$pkgdir/" install
 }
