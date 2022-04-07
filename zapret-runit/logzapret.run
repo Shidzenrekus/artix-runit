@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -e /var/log/zapret ] || {
+    mkdir /var/log/zapret
+    chown tpws:tpws /var/log/zapret
+}
+
+exec chpst -u tpws:tpws svlogd -t /var/log/zapret

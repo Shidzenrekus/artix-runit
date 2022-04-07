@@ -4,7 +4,7 @@ _sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
 
 pkgname=zapret-runit
 pkgver=20220407
-pkgrel=1
+pkgrel=2
 pkgdesc="runit service script for zapret"
 arch=('any')
 url="https://github.com/Shidzenrekus/artix-runit"
@@ -12,9 +12,20 @@ license=('MIT')
 depends=('runit' 'zapret')
 provides=('init-zapret')
 conflicts=('init-zapret')
-source=("zapret.run" "zapret.finish")
+source=("zapret.run" "zapret.finish" "logzapret.run")
 sha256sums=('ec2d5d06dcfd0a6d622f0b564ff75148e609568264cc1598c0f9af6bfbe86092'
-            '8bddbb724adf53206d0564592bfe9950cb32ed81714bcc0f29805b08427b76b7')
+            '8bddbb724adf53206d0564592bfe9950cb32ed81714bcc0f29805b08427b76b7'
+			'c0cb9a1f139eeb3523a2c6e945033de724e31df6ddd599e3460f75f6658d8034')
+
+_inst_logsv() {
+    for file in run finish check; do
+        if test -f "$srcdir/log$1.$file"; then
+            install -Dm755 "$srcdir/log$1.$file" "$pkgdir/etc/runit/sv/$1/log/$file"
+            sed "${_sed_args[@]}" -i "$pkgdir/etc/runit/sv/$1/log/$file"
+        fi
+    done
+}
+
 
 _inst_sv(){
     for file in run finish check; do
@@ -27,4 +38,5 @@ _inst_sv(){
 
 package() {
     _inst_sv 'zapret'
+    _inst_logsv 'zapret'
 }
