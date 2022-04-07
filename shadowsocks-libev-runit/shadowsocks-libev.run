@@ -1,4 +1,4 @@
 #!/bin/sh
 
 [ -r conf ] && . ./conf
-exec chpst -u shadowsocks:shadowsocks /usr/bin/ss-local -c "${CONFIG}"
+exec chpst -u shadowsocks:shadowsocks ss-local -c "${CONFIG}"

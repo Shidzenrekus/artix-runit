@@ -1,7 +1,7 @@
 #!/bin/sh
 
 [ -e /etc/yggdrasil.conf ] || {
-    yggdrasil -genconf
+    yggdrasil -genconf > /etc/yggdrasil.conf
     chmod 0640 /etc/yggdrasil.conf
 }
 
