@@ -3,7 +3,7 @@
 _sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
 
 pkgname=zapret-runit
-pkgver=20220322
+pkgver=20220407
 pkgrel=1
 pkgdesc="runit service script for zapret"
 arch=('any')
@@ -12,15 +12,11 @@ license=('MIT')
 depends=('runit' 'zapret')
 provides=('init-zapret')
 conflicts=('init-zapret')
-source=("zapret.run" "zapret.down")
-sha256sums=('c4dcc3867c68e2b5100013ab03c86b9de67f6e6905c5c9151fe7a9abfda97a58'
-            '15fc4a8619e04719b53c91756e404f805d1dd389c729fa2d058b5233a9d89dec')
+source=("zapret.run" "zapret.finish")
+sha256sums=('ec2d5d06dcfd0a6d622f0b564ff75148e609568264cc1598c0f9af6bfbe86092'
+            '8bddbb724adf53206d0564592bfe9950cb32ed81714bcc0f29805b08427b76b7')
 
 _inst_sv(){
-    if test -f "$srcdir/$1.down"; then
-        install -Dm755 "$srcdir/$1.down" "$pkgdir/etc/runit/sv/$1/control/d"
-    fi
-
     for file in run finish check; do
         if test -f "$srcdir/$1.$file"; then
             install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"

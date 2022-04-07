@@ -1,7 +1,7 @@
 # Maintainer: Denis Shestyora <shidzenrekus90@gmail.com>
 
 pkgname=zapret-git
-pkgver=r432.49771f1
+pkgver=r457.6be8087
 pkgrel=1
 pkgdesc='Bypass deep packet inspection'
 arch=(x86_64)
