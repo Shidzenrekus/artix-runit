@@ -2,7 +2,7 @@
 
 [ -e /var/log/shadowsocks ] || {
     mkdir /var/log/shadowsocks
-    chown nobody:nobody /var/log/shadowsocks
+    chown shadowsocks:shadowsocks /var/log/shadowsocks
 }
 
-exec chpst -u nobody:nobody svlogd -t /var/log/shadowsocks
+exec chpst -u shadowsocks:shadowsocks svlogd -t /var/log/shadowsocks

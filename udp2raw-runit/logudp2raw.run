@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -e /var/log/udp2raw ] || {
+    mkdir /var/log/udp2raw
+    chown nobody:nobody /var/log/udp2raw
+}
+
+exec chpst -u nobody:nobody svlogd -t /var/log/udp2raw

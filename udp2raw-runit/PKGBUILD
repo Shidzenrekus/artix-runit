@@ -2,20 +2,22 @@
 
 _sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
 
-pkgname=shadowsocks-libev-runit
+pkgname=udp2raw-runit
 pkgver=20220407
 pkgrel=1
-pkgdesc="runit service script for shadowsocks-libev"
+pkgdesc="runit service script for udp2raw"
 arch=('any')
 url="https://github.com/Shidzenrekus/artix-runit"
 license=('MIT')
-depends=('shadowsocks-libev' 'runit')
-provides=('init-shadowsocks-libev')
-conflicts=('init-shadowsocks-libev')
-source=("shadowsocks-libev.run" "shadowsocks-libev.conf" "logshadowsocks-libev.run")
-sha256sums=('ea43727a1d0a38ba77a2df0a14038e1217794dd92b12214c7f1297a273c24e3b'
-            '76c1d9d619fba48b6155f625c9fd83da11cc65de2238a768841b684b9f8d3990'
-            '8e37adafdacf77b311188f36ac128c9008ebc449634002023033fcdffcd605a7')
+depends=('udp2raw' 'runit')
+provides=('init-udp2raw')
+conflicts=('init-udp2raw')
+source=("udp2raw.run" "udp2raw_script.sh" "logudp2raw.run" "udp2raw.conf" "udp2raw.down")
+sha256sums=('5b56894c04ab7d5acc88bdb135438f8788cd34489ae4e365ea9f96e67a913fb2'
+            'd068e7461e81a2901d2e8b13af0c3bcd536cb8bebb650aa74d62aabf50c029a5'
+            '80cc32ecae593c2a320a55ed1351f7206c15023775d5fe0d48425defd4dc53ce'
+			'87a48cb5bfd6185dab78006463c01f0116cfc32837c1ade2d438f5ec2f8ff819'
+			'32cd9d19162b5c02d7898fd8c8cdcb34fcc7c398e97f18c892973f7a0e16a51f')
 
 _inst_logsv() {
     for file in run finish check; do
@@ -31,6 +33,10 @@ _inst_sv(){
         install -Dm644 "$srcdir/$1.conf" "$pkgdir/etc/runit/sv/$1/conf"
     fi
 
+    if test -f "$srcdir/$1.down"; then
+        install -Dm755 "$srcdir/$1.down" "$pkgdir/etc/runit/sv/$1/control/d"
+    fi
+
     for file in run finish check; do
         if test -f "$srcdir/$1.$file"; then
             install -Dm755 "$srcdir/$1.$file" "$pkgdir/etc/runit/sv/$1/$file"
@@ -40,6 +46,6 @@ _inst_sv(){
 }
 
 package() {
-    _inst_sv 'shadowsocks-libev'
-    _inst_logsv 'shadowsocks-libev'
+    _inst_sv 'udp2raw'
+    _inst_logsv 'udp2raw'
 }

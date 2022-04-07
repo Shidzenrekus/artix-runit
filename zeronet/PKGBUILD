@@ -4,7 +4,7 @@ _sed_args=(-e 's|/var/run|/run|g' -e 's|\(/usr\)\?/sbin|/usr/bin|g')
 
 pkgname=zeronet-runit
 pkgver=20220322
-pkgrel=1
+pkgrel=2
 pkgdesc="runit service script for zeronet"
 arch=('any')
 url="https://github.com/Shidzenrekus/artix-runit"

@@ -10,7 +10,7 @@ license=('LGPL3')
 depends=('glibc' 'esysusers')
 makedepends=('go')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/yggdrasil-network/yggdrasil-go/archive/v${pkgver}.tar.gz"
-        'yggdrasil.sysusers')
+        'sysusers.conf')
 sha512sums=('00ba6e611c6073e150db0d402edfcd4d548021b30c7afcc11507dfb2ac2e730433bd9f39438331e9d9de6d8a36fc57dc9f01b0d1cbad4927ffbf60906042aac3'
             'b78d1f5efeeba184588ba7bdb2249d976aec160daa59742e032983da1aedad062d15c7c97cba3eba69412a0f7904ee123d98b58f859892d71188c25624295c32')
 b2sums=('8474f52771d7a34027a56de83f74c3ed0f66127b5bcdf498c5820713079e2da1c9ac0c44b0e19903b15ae32fd47d79f8b4cbbe9607dff1951c5ea74ff1af409d'
@@ -25,11 +25,12 @@ build() {
 }
 
 package() {
+  install -vDm644 sysusers.conf "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+
   cd "${pkgname}-go-${pkgver}"
   install -Dm755 "yggdrasil" "${pkgdir}/usr/bin/yggdrasil"
   install -Dm755 "yggdrasilctl" "${pkgdir}/usr/bin/yggdrasilctl"
   install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
-  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
 }
 
 # vim: ts=2 sw=2 et:

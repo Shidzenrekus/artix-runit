@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -r conf ] && . ./conf
+chpst -u nobody /usr/lib/udp2raw/udp2raw_script.sh ${CONFIG} insert
+exec chpst -u nobody udp2raw --conf-file ${CONFIG}
